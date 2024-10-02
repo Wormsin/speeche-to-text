@@ -48,12 +48,13 @@ def speech2text(file_name):
         "text": transcript.text,
         "id": int(datetime.now().month) + int(datetime.now().day) + int(datetime.now().hour) + int(datetime.now().second)
     }
-    with open(file_name[:-3]+"json", "w", encoding="utf-8") as json_file:
+    with open("audio.json", "w", encoding="utf-8") as json_file:
         json.dump(data, json_file, ensure_ascii=False, indent=4)
     print("Данные успешно сохранены в json формате")
+    os.remove(file_name)
 
 
-# Функция для начала записи
+# Функция для начала записи 
 def start_recording():
     global recorder, frames, is_recording, recording_thread, start_time
     recorder = pvrecorder.PvRecorder(device_index=-1, frame_length=chunk_size)
