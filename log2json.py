@@ -49,9 +49,9 @@ def logs_to_json(logs_filename, audio_filename):
         json.dump(output_data, json_file, ensure_ascii=False, indent=4)
 
 
-def action():
-    file_name = "/home/wormsin/Downloads/BP_logs/logs.txt"
-    logs_to_json(file_name, 'audio.json')
-    os.remove(file_name)
-    os.remove('audio.json')
+
+file_name = "/home/wormsin/Downloads/BP_logs/logs.txt"
+logs_to_json(file_name, 'audio.json')
+os.remove(file_name)
+os.remove('audio.json')
     

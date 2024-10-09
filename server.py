@@ -1,24 +1,35 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
-from log2json import action
+from flask import Flask, request, jsonify
+import subprocess
+import threading
 
-class RequestHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        
-        # Здесь запускается ваш Python-код
-        action()
-        
-        # Ответ на запрос
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        response = {'status': 'Python script executed successfully'}
-        self.wfile.write(json.dumps(response).encode())
+app = Flask(__name__)
+recording_process = None
+
+
+@app.route('/start', methods=['POST'])
+def start():
+    global recording_process
+    if recording_process is None:
+        # Запускаем скрипт записи в отдельном процессе
+        recording_process = subprocess.Popen(['python', 'audio.py', "start"])
+        return jsonify({"status": "recording started"})
+    return jsonify({"status": "already recording"})
+
+@app.route('/stop', methods=['POST'])
+def stop():
+    global recording_process
+    if recording_process is not None:
+        # Создаем файл-сигнал, чтобы остановить запись
+        with open("stop_signal.txt", "w") as f:
+            f.write("stop")
+        recording_process = None
+        return jsonify({"status": "recording stopped"})
+    return jsonify({"status": "not recording"})
+
+@app.route('/get_json', methods=['GET'])
+def get_json():
+    subprocess.Popen(['python', 'log2json.py'])
+    return jsonify({"status": "ok"}), 200
 
 if __name__ == '__main__':
-    server_address = ('localhost', 8000)
-    httpd = HTTPServer(server_address, RequestHandler)
-    print('Сервер запущен на порту 8000...')
-    httpd.serve_forever()
+    app.run(host='127.0.0.1', port=5000)
