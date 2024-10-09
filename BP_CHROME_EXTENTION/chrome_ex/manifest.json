@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Logger Extension",
+    "name": "Audio-Logger",
     "version": "1.0",
     "background": {
         "service_worker": "background.js"
@@ -11,6 +11,11 @@
         "tabs",
         "storage"
     ],
+    "icons": {
+        "16": "icons/cat-16.png",
+        "48": "icons/cat-48.png",
+        "128": "icons/cat-128.png"
+    },
     "content_scripts": [
         {
             "matches": [

@@ -1,10 +1,41 @@
-//chrome.runtime.onInstalled.addListener(() => {
-//    console.log('Extension installed and ready to log interactions.');
-//});
+let isRecording = 'start'; // Начальное состояние кнопки
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.action === 'saveLogs') {
-        let logs = message.logs;
+
+// Обработка сообщений из popup.js
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'getRecordstate') {
+        // Отправка текущего состояния кнопки
+        sendResponse({ isRecording: isRecording });
+    } else if (request.action === 'toggleRecord') {
+        // Переключение состояния кнопки
+        const previousState = isRecording;
+        isRecording = isRecording === 'start' ? 'stop' : 'start';
+
+        // Отправка состояния кнопки на сервер
+        if (previousState === 'start' && isRecording === 'stop') {
+            sendRecordStateToServer('/start')
+                .then(() => {
+                    sendResponse({ isRecording: isRecording });
+                })
+                .catch((error) => {
+                    console.error('Error sending state to server:', error);
+                    sendResponse({ error: 'Failed to send state to server' });
+                });
+        } else if (previousState === 'stop' && isRecording === 'start') {
+            sendRecordStateToServer('/stop')
+                .then(() => {
+                    sendResponse({ isRecording: isRecording });
+                })
+                .catch((error) => {
+                    console.error('Error sending state to server:', error);
+                    sendResponse({ error: 'Failed to send state to server' });
+                });
+        }
+
+        return true; // Указывает, что ответ будет отправлен асинхронно
+
+    } else if (request.action === 'saveLogs') {
+        let logs = request.logs;
 
         // Создаем Blob из накопленных логов
         let blob = new Blob([logs.join('\n')], { type: 'text/plain' });
@@ -28,8 +59,22 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             });
         };
         reader.readAsDataURL(blob); // Чтение Blob как Data URL
+    } else {
+        sendResponse({ error: 'Unknown action' });
     }
 });
 
+// Функция для отправки состояния кнопки на сервер
+async function sendRecordStateToServer(endpoint) {
+    const response = await fetch(`http://127.0.0.1:5000${endpoint}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ state: endpoint === '/start' ? 'start' : 'stop' }),
+    });
 
-
+    if (!response.ok) {
+        throw new Error('Network response was not ok: ' + response.statusText);
+    }
+}

@@ -10,28 +10,50 @@
             font-family: Arial, sans-serif;
             width: 200px;
             padding: 20px;
+            align-items: center
         }
 
         button {
             padding: 10px;
-            background-color: #4CAF50;
+            background-color: #00008b;
             color: white;
+            border-radius: 10px;
+            padding: 10px 20px;
             border: none;
             cursor: pointer;
             width: 100%;
             font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold
+
+        }
+        button:hover {
+            background-color: #20b2a6;
+        }
+        .image-container {
+            display: flex; /* Используем flexbox для расположения картинок */
+            justify-content: space-between; /* Располагаем картинки по краям контейнера */
+            width: 100%; /* Ширина контейнера на всю ширину */
+            margin-bottom: 20px; /* Отступ между картинками и кнопками */
         }
 
-        button:hover {
-            background-color: #45a049;
+        .cat-image {
+            width: 100px; /* Ширина картинок */
+            height: 100px; /* Высота картинок */
         }
     </style>
 </head>
 
 <body>
-    <h1>Логи кликов</h1>
-    <button id="save-logs">Сохранить логи</button>
-    <button id="run-python">Получить json</button>
+    <div class="image-container">
+        <img class="cat-image" src="icons/cat-128.png" alt="Cat Icon Left"> <!-- Левая картинка -->
+        <img class="cat-image" src="icons/cat-128.png" alt="Cat Icon Right"> <!-- Правая картинка -->
+    </div>
+    <button id="audio-btn">Start</button>
+    <button id="save-logs">Save logs</button>
+    <button id="get-json">Get json</button>
     <script src="popup.js"></script>
 </body>
 
