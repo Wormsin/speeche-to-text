@@ -7,13 +7,15 @@ from datetime import datetime
 import json
 from openai import OpenAI
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Переменная для отслеживания состояния записи
 is_recording = False
 recorder = None
 output_file = 'audio_recording.wav'
 client = OpenAI()
-
 
 def start_recording():
     global recorder, is_recording

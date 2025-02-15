@@ -1,6 +1,7 @@
 import re
 import json
 import os 
+from pathlib import Path
 
 def extract_name_or_placeholder(element):
     """Функция для извлечения атрибута name или placeholder, если они есть."""
@@ -43,14 +44,17 @@ def logs_to_json(logs_filename, audio_filename):
         "audio_actions": actions,
         "id": audio_data["id"]
     }
-    output_filename = audio_data["timestamp"]+".json"
+    name = "Downloads/BP_json/"+ audio_data["timestamp"]+".json"
+    if not os.path.exists(Path.home() / "Downloads/BP_json"):
+        os.mkdir(Path.home() / "Downloads/BP_json")
+    output_filename = Path.home() / name
     # Записываем финальные данные в output.json
     with open(output_filename, 'w', encoding='utf-8') as json_file:
         json.dump(output_data, json_file, ensure_ascii=False, indent=4)
 
 
 
-file_name = "/home/wormsin/Downloads/BP_logs/logs.txt"
+file_name = Path.home() / "Downloads/BP_logs/logs.txt"
 logs_to_json(file_name, 'audio.json')
 os.remove(file_name)
 os.remove('audio.json')
